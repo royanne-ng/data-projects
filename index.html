@@ -1,226 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Bingo Board with Points</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto&display=swap" rel="stylesheet">
-    <style>
-        #title-banner {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 20px;
-            background-color: #ffffff;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            z-index: 100;
-        }
-        #title-banner h1 {
-            margin: 0;
-            font-size: 32px;
-        }
-        #title-banner p {
-            margin: 5px 0 0 0;
-            font-size: 18px;
-            color: #555;
-        }
-        body {
-            margin-top: 120px; /* To make room for the fixed banner */
-        }
-
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            display: flex;
-            margin: 150px 50px 50px 50px;
-            gap: 50px;
-        }
-        #bingo-board {
-            display: grid;
-            grid-template-columns: repeat(5, 120px);
-            grid-template-rows: repeat(5, 120px);
-            gap: 10px;
-        }
-        .cell-title {
-            text-align: center;
-            font-weight: bold;
-            font-size: 15px
-        }
-        .cell {
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
-            padding: 10px;
-            box-sizing: border-box;
-            font-size: 14px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-        }
-        .cell.completed {
-            background-color: #d4edda;
-        }
-        .challenge-button {
-            margin-top: 5px;
-            display: none;
-        }
-        .cell.active .challenge-button {
-            display: block;
-        }
-        #score-panel {
-            font-size: 18px;
-        }
-        #description-panel {
-            margin-top: 20px;
-            font-size: 16px;
-            width: 100%;
-            max-width: 500px;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        #description-card {
-            background-color: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        #description-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        #description-text {
-            font-size: 15px;
-        }
-        #description-text ul {
-            padding-left: 7px
-        }
-        #description-text ul li {
-            margin-bottom: 10px;
-        }
-        #description-panel.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-                margin: 20px;
-            }
-
-            #bingo-board {
-                grid-template-columns: repeat(3, 1fr);
-                grid-template-rows: auto;
-                justify-items: center;
-            }
-
-            #description-panel {
-                max-width: 100%;
-                width: 100%;
-            }
-        }
-
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My data projects</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: #f5f5f5;
+      color: #000;
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 30%;
+      padding: 40px 30px;
+      background-color: #f5f5f5;
+      box-sizing: border-box;
+    }
+    .sidebar h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+    .sidebar p {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    .main-content {
+      width: 70%;
+      padding: 40px 30px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      box-sizing: border-box;
+    }
+    .main-content a {
+      display: block;
+      transition: transform 0.3s ease;
+    }
+    .main-content a:hover {
+      transform: scale(1.05);
+    }
+    .main-content img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border: none;
+      box-shadow: none;
+    }
+  </style>
 </head>
 <body>
-    <div id="title-banner">
-        <h1>Surya's Birthday Challenge Board</h1>
-        <p>Complete tasks, earn points, and have fun!</p>
-    </div>
-
-    <div>
-        <div id="bingo-board"></div>
-    </div>
-    <div>
-        <div id="score-panel">
-            <strong>Total Points:</strong> <span id="total-points">0</span>
-        </div>
-        <div id="description-panel">
-            <div id="description-card">
-                <div id="description-title"></div>
-                <div id="description-text"></div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const items = [
-            { description: "Green is In", points: 5, details: ["Surya has a too many green school shirts", "Locate a green tshirt. It must be dry fit material and cannot be army green", "Send a photo of the tshirt to the gamemaster (Royanne) for your challenge to be completed"] },
-            { description: "Little Goes a Long Way", points: 10, details: ["Buy some snacks/drinks for migrant workers!"] },
-            { description: "Hold a flower at Mayflower MRT", points: 5, details: ["Must be a literal flower (cannot be a printed image/graphic of a flower)", "The flower can be artificial or real", "Send a photo to the group chat of you holding the flower, with the MRT sign visible in the photo (both inside and outside the station counts)"] },
-            { description: "Every Pearl Counts", points: 7, details: ["Guess the number of pearls in an unopened cup of bubble tea", "Then, you have to actually count the pearls", "Your guess must be within +-7 of the real count for the challenge to be considered complete", "You have a maximum of 2 tries"] },
-            { description: "Judge an Animal", points: 8, details: ["Take a video of you talking to an animal", "Your face need not be visible, but your voice must be audible and the animal must be in the frame at all times", "You can talk about any subject matter for at least 15 seconds, but you must include the line: I hereby declare you.. GUILTY!"] },
-            { description: "Run to Spell", points: 6, details: ["Using any running app, run to spell the word 'SAI'", "The letters must be legible and you must run at least 200m", "Send a screenshot of your running route to the group chat for the challenge to be considered complete"] },
-            { description: "Be a Banana Connoisseur", points: 10, details: ["Did you know that Surya does not really like bananas? Me neither", "Find something banana flavoured and eat it – actual bananas do not count", "To complete the challenge, send a photo of the item to the chat, along with a rating on a scale of 1 to 5 (1 - doesn’t taste like banana, 5 - taste like banana)"] },
-            { description: "Supermarket stroll", points: 7, details: ["Find 3 food items in any supermarket which were produced in countries beginning with the letter ‘S’, ‘A’, ‘I’. You must find one for each letter", "Send photos of the items you’ve found with their ‘Made in __’ labels", "You must find all three items in the same supermarket", "If someone has completed the challenge before you, you CANNOT do the challenge using the same items"] },
-            { description: "Appreciate a Water Body", points: 5, details: ["Sit in front of a pond, lake, river, sea for 20 minutes continuously"] },
-            { description: "Be an Accidental Time Traveller", points: 9, details: ["Take a photo of yourself with a food/drink item that was made/launched in 1995", "Printed/Digital images of these items do not count", "Take a photo as evidence but DO NOT post it into the group chat. Instead, send the image to the gamemaster (Royanne) for the challenge to be completed"] },
-            { description: "Drop it like it’s hot", points: 4, details: ["Finish a full-meal portion of Mala (at least medium spicy) or a McSpicy Burger", "Send a time lapse video of eating and finishing it as evidence", "Bonus if you eat it together with Surya"] },
-            { description: "Get a Haircut", points: 10, details: ["Go to a professional hair salon and get a haircut. You cannot cut your own hair ok!", "Send to the group chat a photo of you sitting in the salon chair to complete this challenge"] },
-            { description: "I-SPY in IKEA", points: 6, details: ["Go to any IKEA outlet and look for the item named BLÅVINGAD", "You cannot look up/web search this item prior to or during the challenge", "You cannot ask any IKEA staff for help", "When found, take a photo as evidence but DO NOT post it into the group chat. Instead, send the image to the gamemaster (Royanne) for the challenge to be completed"] },
-            { description: "Draw a Dog", points: 8, details: ["With a pen and any drawable surface, draw a dog with your eyes closed the whole duration", "The dog must have eyes, a mouth and a title under it that says ‘DOG’, capitalized, also written with your eyes closed", "You may look at dog photos or graphics for reference before starting", "The challenge is complete the moment you send a photo of your masterpiece to the group chat. The photo must be accompanied by the artwork caption: ‘[Your name], Dog, 2025, Pen on [material]’"] },
-            { description: "Claw Machine Chaos", points: 10, details: ["Take a video of yourself trying to win a prize at any claw machine", "While playing for the prize, you must chant any one of the following lines, in character, by Monkey D Luffy from One Piece:", "'If you don’t take risks, you can’t create a future.'", "'As long as I live, there are infinite chances!'", "'Are we friends? Or are we foes? That kind of thing you decide for yourselves'", "You don’t have to win a prize. The challenge is complete once the video is uploaded to the group chat"] },
-            { description: "Recreate a Meme", points: 3, details: ["Recreate a popular meme using yourself, people or objects around you", "Send it together, or place it side by side with images of the original meme", "Send them to the group chat for the challenge to be completed"] },
-            { description: "The Correct Name", points: 6, details: ["Rename an everyday object in a perfectly logical way (Eg. Butter is ‘Bread Moisturizer’, Snake is ‘Danger Noodle’)", "Take a photo of that object and send it to the chat with its Correct Name, for the challenge to be completed"] },
-            { description: "The Birthday Riddle", points: 2, details: ["Smooth the sheets.", "Fluff pillows.", "Tuck the blanket neatly."] },
-            { description: "The IPPT Challenge", points: 5, details: ["Surya just completed his IPPT this morning. Guess his number of push ups, sit ups and 2.4km run time", "To successfully complete, you must get within +-5 of either his pushup or situp count AND +- 1 minute of his run time (seconds are not counted)", "If you guess wrongly, you have one more chance: Take a video of yourself doing the same number of push ups or sit ups that surya did this morning. Don’t forget to say happy birthday surya at the end!"] },
-            { description: "Create a Shen Gong Wu", points: 4, details: ["In one of Surya’s favourite animated shows, Xiaolin Showdown, a Shen Gong Wu is a magical object with unique powers, created by Grand Master Dashi", "Your task: Choose any object in the physical world that would make a believable Shen Gong Wu", "Either in a video or photo caption, 1) Name the Shen Gong Wu (names should have a similar style as those in the show)  and 2) Explain it’s magical properties for the challenge to be successful"] },
-            { description: "Be a Buzzer Beater", points: 7, details: ["195 seconds is also 3 minutes and 15 seconds", "With a stopwatch app, start a timer running but obscure the count. When you think 3 minutes and 15 seconds is up, stop the timer and check how far/close you are", "The challenge is only complete if you get +- 3 seconds of 3 minutes and 15 seconds (send a photo of your result to the group chat)", "You have only 1 try but multiple practice rounds to strategize or test!"] },
-            { description: "Badass ma!", points: 6, details: ["You might know Kendrick Lamar and Doechii… but how about Anirudh or SaNa? Nothing gets a vibe up like music from South Indian movies, so it’s time for some of surya’s favourite RIZZED BEATS", "Listen to at least half the songs on this playlist for the challenge to be completed:"] },
-            { description: "Catch Bus 195", points: 3, details: ["Send a photo of yourself with bus 195 to the group chat", "The bus number must be clearly visible in the image", "You don’t have to ride the bus!"] },
-            { description: "Take a walk outside", points: 5, details: ["Choose a safe route.", "Wear comfy shoes.", "Breathe deeply."] },
-            { description: "Declutter your desk", points: 4, details: ["Remove trash.", "Organize papers.", "Clean the surface."] }
-        ];
-
-        let totalPoints = 0;
-
-        function generateBoard() {
-            const board = document.getElementById('bingo-board');
-            const descriptionPanel = document.getElementById('description-panel');
-            const descriptionTitle = document.getElementById('description-title');
-            const descriptionText = document.getElementById('description-text');
-            board.innerHTML = '';
-            items.forEach((item, index) => {
-                const cell = document.createElement('div');
-                cell.className = 'cell';
-                cell.innerHTML = `
-                    <div class="cell-title">${item.description}</div>
-                    <div><strong>${item.points} pts</strong></div>
-                    <button class="challenge-button">Challenge Completed</button>
-                `;
-
-                const button = cell.querySelector('button');
-
-                cell.addEventListener('click', () => {
-                    if (!cell.classList.contains('completed')) {
-                        document.querySelectorAll('.cell').forEach(c => c.classList.remove('active'));
-                        cell.classList.add('active');
-                        descriptionTitle.textContent = item.description;
-                        descriptionText.innerHTML = '<ul>' + item.details.map(detail => `<li>${detail}</li>`).join('') + '</ul>';
-                        descriptionPanel.classList.add('show');
-                    }
-                });
-
-                button.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (!cell.classList.contains('completed')) {
-                        totalPoints += item.points;
-                        document.getElementById('total-points').textContent = totalPoints;
-                        cell.classList.add('completed');
-                        cell.classList.remove('active');
-                        button.style.display = 'none';
-                    }
-                });
-
-                board.appendChild(cell);
-            });
-        }
-
-        // Initialize the board on load
-        window.onload = generateBoard;
-    </script>
+  <div class="sidebar">
+    <h1>Royanne's Data Playground</h1>
+    <p>This page provides an overview of some of my past and ongoing data projects. Click on any of the images on the right to explore!</p>
+  </div>
+  <div class="main-content">
+    <a href="https://royanne-ng.github.io/blind-boxes/" target="_blank">
+      <img src="https://artwork.neocities.org/photos/stickers/sticker30.png" alt="Blind boxes" />
+    </a>
+    <a href="https://royanne-ng.github.io/blind-boxes/" target="_blank">
+      <img src="https://artwork.neocities.org/photos/stickers/sticker39.png" alt="Coming Soon" />
+    </a>
+    <a href="https://royanne-ng.github.io/blind-boxes/" target="_blank">
+      <img src="https://artwork.neocities.org/photos/stickers/sticker29.png" alt="Coming Soon" />
+    </a>
+    <a href="https://royanne-ng.github.io/blind-boxes/" target="_blank">
+      <img src="https://artwork.neocities.org/photos/stickers/sticker37.png" alt="Coming Soon" />
+    </a>
+    <a href="https://royanne-ng.github.io/blind-boxes/" target="_blank">
+      <img src="https://artwork.neocities.org/photos/stickers/sticker35.png" alt="Coming Soon" />
+    </a>
+    <a href="https://royanne-ng.github.io/blind-boxes/" target="_blank">
+      <img src="https://artwork.neocities.org/photos/stickers/sticker36.png" alt="Coming Soon" />
+    </a>
+  </div>
 </body>
 </html>
